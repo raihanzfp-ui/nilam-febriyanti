@@ -1,115 +1,273 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Nilam Febriyanti 💜</title>
+
+<style>
+body{
+font-family:Arial,sans-serif;
+background:linear-gradient(#f8f0ff,#efe4ff);
+padding:20px;
+max-width:1000px;
+margin:auto;
+}
+
+.card{
+background:white;
+padding:15px;
+border-radius:18px;
+margin-bottom:15px;
+box-shadow:0 4px 12px rgba(0,0,0,.08);
+}
+
+h1{
+text-align:center;
+color:#8a63d2;
+}
+
+h2{
+text-align:center;
+color:#7c4fd4;
+}
+
+input,select,button{
+padding:10px;
+margin:5px;
+border-radius:10px;
+border:1px solid #d6bcfa;
+}
+
+button{
+background:#b794f4;
+color:white;
+border:none;
+cursor:pointer;
+}
+
+button:hover{
+opacity:.9;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+background:white;
+}
+
+th{
+background:#d6bcfa;
+}
+
+th,td{
+border:1px solid #ddd;
+padding:8px;
+text-align:center;
+}
+
+.st{
+position:fixed;
+font-size:28px;
+pointer-events:none;
+opacity:.9;
+}
+</style>
+</head>
+<body>
+
+<div class="st" style="top:10px;left:10px">🧸</div>
+<div class="st" style="top:20px;right:20px">💜</div>
+<div class="st" style="top:120px;left:30px">🌷</div>
+<div class="st" style="top:180px;right:40px">💕</div>
+<div class="st" style="top:260px;left:15px">✨</div>
+<div class="st" style="top:340px;right:20px">🎀</div>
+<div class="st" style="bottom:120px;left:20px">🦋</div>
+<div class="st" style="bottom:80px;right:40px">🌸</div>
+<div class="st" style="bottom:20px;left:100px">💖</div>
+<div class="st" style="bottom:40px;right:100px">🌺</div>
+
+<div class="card">
+<h1>💜 Nilam Febriyanti 💜</h1>
+<p style="text-align:center">🌷 Catatan Pemasukan & Pengeluaran 🌷</p>
+<h2>Saldo : Rp <span id="saldo">0</span></h2>
+</div>
+
+<div class="card">
+<input id="ket" placeholder="📝 Keterangan">
+<input id="nom" placeholder="💰 Nominal">
+
+<select id="jenis">
+<option value="masuk">💰 Pemasukan</option>
+<option value="keluar">🛍️ Pengeluaran</option>
+</select>
+
+<button onclick="tambah()">Simpan 💜</button>
+</div>
+
+<div class="card">
+<table>
+<thead>
+<tr>
+<th>📅 Tanggal</th>
+<th>📝 Keterangan</th>
+<th>💰 Pemasukan</th>
+<th>🛍️ Pengeluaran</th>
+<th>💜 Saldo</th>
+<th>⚙️ Aksi</th>
+</tr>
+</thead>
+
+<tbody id="tb"></tbody>
+</table>
+</div>
+
 <script>
-let data=JSON.parse(localStorage.getItem('nilamData')||'[]');
+
+let data = JSON.parse(localStorage.getItem('nilamData') || '[]');
 
 document.getElementById('nom').addEventListener('input',function(e){
- let a=e.target.value.replace(/[^0-9]/g,'');
- e.target.value=a.replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+
+let angka = e.target.value.replace(/\D/g,'');
+
+e.target.value = angka.replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+
 });
 
 function rp(n){
- return Number(n).toLocaleString('id-ID');
+return Number(n).toLocaleString('id-ID');
 }
 
-function simpanData(){
- localStorage.setItem('nilamData',JSON.stringify(data));
+function simpan(){
+localStorage.setItem('nilamData',JSON.stringify(data));
 }
 
 function render(){
- let saldo=0;
- const tb=document.getElementById('tb');
- tb.innerHTML='';
 
- if(data.length===0){
-  tb.innerHTML='<tr><td>🌷</td><td>Belum ada data</td><td>-</td><td>-</td><td>🧸</td><td>-</td></tr>';
- }
+let saldo = 0;
 
- data.forEach((i,index)=>{
-   saldo += i.jenis==='masuk'?i.nom:-i.nom;
+const tb = document.getElementById('tb');
 
-   tb.innerHTML += `
-   <tr>
-    <td>${i.tgl}</td>
-    <td>${i.ket}</td>
-    <td>${i.jenis==='masuk'?rp(i.nom):'-'}</td>
-    <td>${i.jenis==='keluar'?rp(i.nom):'-'}</td>
-    <td>${rp(saldo)}</td>
-    <td>
-      <button onclick="editData(${index})">✏️</button>
-      <button onclick="hapusData(${index})">🗑️</button>
-    </td>
-   </tr>`;
- });
+tb.innerHTML = '';
 
- document.getElementById('saldo').textContent=rp(saldo);
+if(data.length===0){
+
+tb.innerHTML = `
+<tr>
+<td>🌷</td>
+<td>Belum ada data</td>
+<td>-</td>
+<td>-</td>
+<td>0</td>
+<td>🧸</td>
+</tr>`;
+
+}
+
+data.forEach((item,index)=>{
+
+saldo += item.jenis==="masuk"
+? item.nom
+: -item.nom;
+
+tb.innerHTML += `
+<tr>
+<td>${item.tgl}</td>
+<td>${item.ket}</td>
+<td>${item.jenis==="masuk" ? rp(item.nom) : "-"}</td>
+<td>${item.jenis==="keluar" ? rp(item.nom) : "-"}</td>
+<td>${rp(saldo)}</td>
+<td>
+<button onclick="editData(${index})">✏️</button>
+<button onclick="hapusData(${index})">🗑️</button>
+</td>
+</tr>
+`;
+
+});
+
+document.getElementById('saldo').textContent = rp(saldo);
+
 }
 
 function tambah(){
- const ket=document.getElementById('ket').value.trim();
- const nom=document.getElementById('nom').value.replace(/\./g,'');
- const jenis=document.getElementById('jenis').value;
 
- if(!ket || !nom){
-  alert('Isi data dulu ya 💜');
-  return;
- }
+const ket = document.getElementById('ket').value.trim();
 
- data.push({
-  tgl:new Date().toLocaleDateString('id-ID'),
-  ket:ket,
-  nom:Number(nom),
-  jenis:jenis
- });
+const nom = document.getElementById('nom').value.replace(/\./g,'');
 
- simpanData();
+const jenis = document.getElementById('jenis').value;
 
- document.getElementById('ket').value='';
- document.getElementById('nom').value='';
+if(!ket || !nom){
 
- render();
+alert('Isi data dulu ya 💜');
+
+return;
+
+}
+
+data.push({
+
+tgl:new Date().toLocaleDateString('id-ID'),
+
+ket:ket,
+
+nom:Number(nom),
+
+jenis:jenis
+
+});
+
+simpan();
+
+document.getElementById('ket').value='';
+
+document.getElementById('nom').value='';
+
+render();
+
 }
 
 function hapusData(index){
- if(confirm('Yakin mau hapus data ini? 🗑️')){
-   data.splice(index,1);
-   simpanData();
-   render();
- }
+
+if(confirm('Yakin mau hapus data ini? 🗑️')){
+
+data.splice(index,1);
+
+simpan();
+
+render();
+
+}
+
 }
 
 function editData(index){
 
- let item=data[index];
+let item = data[index];
 
- let ketBaru=prompt('📝 Edit Keterangan',item.ket);
- if(ketBaru===null) return;
+let ketBaru = prompt('📝 Edit Keterangan',item.ket);
 
- let nominalBaru=prompt('💰 Edit Nominal',item.nom);
- if(nominalBaru===null) return;
+if(ketBaru===null) return;
 
- let jenisBaru=prompt(
-  'Ketik: masuk atau keluar',
-  item.jenis
- );
+let nominalBaru = prompt('💰 Edit Nominal',item.nom);
 
- if(jenisBaru===null) return;
+if(nominalBaru===null) return;
 
- jenisBaru=jenisBaru.toLowerCase();
+data[index].ket = ketBaru;
 
- if(jenisBaru!=='masuk' && jenisBaru!=='keluar'){
-   alert('Harus masuk atau keluar');
-   return;
- }
+data[index].nom = Number(nominalBaru);
 
- data[index]={
-   ...item,
-   ket:ketBaru,
-   nom:Number(nominalBaru),
-   jenis:jenisBaru
- };
+simpan();
 
- simpanData();
- render();
+render();
+
 }
 
 render();
+
 </script>
+
+</body>
+</html>
